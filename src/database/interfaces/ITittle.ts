@@ -3,5 +3,6 @@ export interface Title {
   price: Number;
   writer: string;
   createdAt: Date;
+  rating: string;
   ranking: Number;
 }

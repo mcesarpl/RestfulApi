@@ -1,44 +1,55 @@
 import { Request, Response } from "express";
-import { TitleRepository } from "src/database/repositories/TitleRepository";
-import Title from "../database/models/Title";
+import TitleRepository from "src/database/repositories/TitleRepository"
+import { Title } from "../database/classes/Title";
 
 class TitleController {
   static async findOne(req: Request, res: Response) {
-    const { id } = req.body;
+    const { id } = req.params;
 
-    const title = await Title.findOne({ where: { id } });
+    try {
+      const title = await TitleRepository.findOne(id);
 
-    return res.status(200).json(title);
+      return res.status(200).json(title);
+
+    }catch(error) {
+      return res.status(500).send();
+    }
   }
 
   static async findByDate(req: Request, res: Response) {
     const { createdAt } = req.body;
 
-    const titles = await Title.findAll({ where: { createdAt } });
+    try {
+      const titles = await TitleRepository.findAll( { createdAt } );
 
-    return res.status(200).json(titles);
+      return res.status(200).json(titles);
+    } catch(error) {
+      return res.status(500).send();
+    }
   }
 
   static async create(req: Request, res: Response) {
-    const { title, writer, price, rating, ranking } = req.body;
 
-    const newTitle = await Title.create({
-      title,
-      writer,
-      price,
-      rating,
-      ranking,
-    });
+    const title = new Title(req.body);
+    try {
+      const newTitle = await TitleRepository.create(title);
 
-    return res.status(201).json(newTitle);
+      return res.status(200).json(newTitle);
+    } catch(error) {
+      return res.status(500).send();
+    }
   }
 
   static async delete(req: Request, res: Response) {
-    const { id } = req.body;
+    const { id } = req.params;
 
-    await Title.destroy({ where: { id } });
+    try {
+      await TitleRepository.destroy(id);
 
-    return res.status(201).send();
+      return res.status(201).send();
+    } catch(error) {
+      return res.status(500).send();
+    }
   }
 }
 
